@@ -1,22 +1,46 @@
 import React, { useContext } from 'react'
+import {
+  Card,
+  CardContent,
+  Typography,
+  List,
+  ListItem
+} from '@mui/material';
+
 import { passwordContext } from '../context/PasswordContext'
 const History = ({isDarkMode}) => {
-    const {history} = useContext(passwordContext)
+ const {history} = useContext(passwordContext)
   return (
-<div>
-<div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} p-4 rounded-lg shadow-md mt-6`}>
-    <h2 className="text-xl font-semibold mb-2 ">Password History</h2>
-    {history.length === 0 ? (
-      <p className="text-gray-400">No passwords generated yet.</p>
-    ) : (
-      <ul className="list-disc pl-5 space-y-1 ">
-        {history.map((pass, idx) => (
-          <li key={idx} className="break-all">{pass}</li>
-        ))}
-      </ul>
-    )}
-  </div>
-   </div>
+    <Card
+    sx={{
+      maxWidth: 900,
+      marginTop: 4,
+      backgroundColor: isDarkMode ? 'grey.900' : 'grey.100',
+      color: isDarkMode ? 'white' : 'black',
+    }}
+  >
+    <CardContent>
+      <Typography variant="h6" gutterBottom>
+        Password History
+      </Typography>
+      {history.length === 0 ? (
+        <Typography color="text.secondary">
+          No passwords generated yet.
+        </Typography>
+      ) : (
+        <List>
+          {history.map((pass, idx) => (
+            <ListItem
+              key={idx}
+              sx={{ wordBreak: 'break-all', px: 0 }}
+            >
+              {pass}
+            </ListItem>
+          ))}
+        </List>
+      )}
+    </CardContent>
+  </Card>
   )
 }
 

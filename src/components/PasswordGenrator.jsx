@@ -1,6 +1,17 @@
 import React ,{ useContext, useEffect, useRef, useState} from 'react'
 import { generatePassword } from '../utils/passUtils'
 import { passwordContext } from '../context/PasswordContext'
+import {
+  Button,
+  TextField,
+  Typography,
+  Card,
+  CardContent,
+  Slider,
+  Checkbox,
+  FormControlLabel,
+  Box
+} from '@mui/material';
 
 const PasswordGenrator = ({isDarkMode}) => {
   const [password , setPassword] = useState('')
@@ -31,64 +42,54 @@ const PasswordGenrator = ({isDarkMode}) => {
     setTimeout(()=>setCopied(false),2000)
   }
   return (
-    <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} p-4 rounded-lg shadow-md mt-6`}>
-   <h1 className='text-2xl font-bold'> 🔐 Password Generator</h1>
-    <div>
-      <input 
-      type="text"
-       value={password}
-      className=' m-1 p-2 border-1 rounded'
-      placeholder='Password'
-      readOnly
-      />
+    <Card sx={{ maxWidth: 500, marginTop: 4, backgroundColor: isDarkMode ? 'grey.900' : 'grey.100', color: isDarkMode ? 'white' : 'black' }}>
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          🔐 Password Generator
+        </Typography>
 
-      <button 
-      onClick={copyPassword}
-      className='bg-blue-500 p-2 cursor-pointer text-white hover:bg-blue-400 rounded-lg'
-      >
-        Copy
-      </button>
-    </div>
+        <Box display="flex" gap={1} alignItems="center" mb={2}>
+          <TextField
+            inputRef={passRef}
+            fullWidth
+            label="Generated Password"
+            value={password}
+            InputProps={{ readOnly: true }}
+            variant="outlined"
+          />
+          <Button variant="contained" color="primary" onClick={copyPassword}>
+            Copy
+          </Button>
+        </Box>
 
-   <div className='flex text-sm gap-x-2'>
-   <div className='flex items-center gap-x-1'>
-        <input 
-        type='range'
-        value={length}
-        min={4}
-        max={128}
-        className='cursor-pointer'
-        onChange={(e) => {setLength(e.target.value)}}
-         />
-         <label>Length :{length}</label>
-      </div>
+        <Box mb={2}>
+          <Typography gutterBottom>Password Length: {length}</Typography>
+          <Slider
+            value={length}
+            onChange={(e, newValue) => setLength(newValue)}
+            min={4}
+            max={128}
+            step={1}
+            valueLabelDisplay="auto"
+          />
+        </Box>
 
-      <div>
-        <input
-        type='checkbox'
-        defaultChecked={number}
-        id='numberinput'
-        onChange={() => setNumber(prev => !prev)} 
-
+        <FormControlLabel
+          control={<Checkbox checked={number} onChange={() => setNumber(prev => !prev)} />}
+          label="Include Numbers"
         />
-        <label htmlFor="numberinput">Numbers</label>
-      </div>
-
-      <div>
-        <input
-        type='checkbox'
-        defaultChecked={character}
-        id='charcterInput'
-        onChange={() => setCharacter(prev => !prev)} // ✅ This is correct
-
+        <FormControlLabel
+          control={<Checkbox checked={character} onChange={() => setCharacter(prev => !prev)} />}
+          label="Include Special Characters"
         />
-        <label htmlFor="charcterInput">Character</label>
-      </div>
-   </div>
-   {copied && (
-    <p className='text-green-600 mt-3'>Copied!</p>
-   )}
-  </div>
+
+        {copied && (
+          <Typography sx={{ mt: 2 }} color="success.main">
+            Copied!
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 

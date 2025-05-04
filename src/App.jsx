@@ -1,5 +1,7 @@
 import { useState , useEffect } from 'react'
 import './App.css'
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
+import { IconButton } from '@mui/material';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid'  // Import icons
 import PasswordGenrator from './components/PasswordGenrator'
 import History from './components/History';
@@ -17,7 +19,7 @@ function App() {
 
   useEffect(()=>{
     if (isDarkMode) {
-      document.documentElement.classList.add('dark')
+      document.documentElement.classList.toggle('dark')
     }else{
       document.documentElement.classList.remove('dark')
     }
@@ -28,10 +30,18 @@ function App() {
   const toggletheme = () =>{
     setIsDarkMode(!isDarkMode)
   }
+
+  const theme = createTheme({
+    palette:{
+      mode: isDarkMode ? 'dark':'light'
+    }
+  })
   return (
-    <div className={` flex flex-col items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+ <ThemeProvider theme={theme}>
+  <CssBaseline />
+  <div className={` flex flex-col items-center justify-center min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
     <div className='absolute top-4 right-4 '>
-    <button
+    <IconButton 
         onClick={toggletheme}
         className="p-2 bg-blue-400 text-white rounded-l-full m-4"
       >
@@ -40,13 +50,14 @@ function App() {
         ) : (
           <MoonIcon className="h-5 w-5 mr-2" />
         )}
-      </button>
+      </IconButton >
     </div>
      <PasswordProvider >
      <PasswordGenrator isDarkMode={isDarkMode} />
      <History isDarkMode={isDarkMode}/>
      </PasswordProvider >
     </div>
+ </ThemeProvider>
   )
 }
 
