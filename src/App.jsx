@@ -43,8 +43,8 @@ function App() {
       </button>
     </div>
      <PasswordProvider >
-     <PasswordGenrator />
-     <History />
+     <PasswordGenrator isDarkMode={isDarkMode} />
+     <History isDarkMode={isDarkMode}/>
      </PasswordProvider >
     </div>
   )

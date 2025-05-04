@@ -2,7 +2,7 @@ import React ,{ useContext, useEffect, useRef, useState} from 'react'
 import { generatePassword } from '../utils/passUtils'
 import { passwordContext } from '../context/PasswordContext'
 
-const PasswordGenrator = () => {
+const PasswordGenrator = ({isDarkMode}) => {
   const [password , setPassword] = useState('')
   const [length, setLength] = useState(4)
   const [number, setNumber] = useState(false)
@@ -31,13 +31,13 @@ const PasswordGenrator = () => {
     setTimeout(()=>setCopied(false),2000)
   }
   return (
-  <div className=' '>
+    <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} p-4 rounded-lg shadow-md mt-6`}>
    <h1 className='text-2xl font-bold'> 🔐 Password Generator</h1>
     <div>
       <input 
       type="text"
        value={password}
-      className='text-white m-1 p-2 bg-gray-800 rounded'
+      className=' m-1 p-2 border-1 rounded'
       placeholder='Password'
       readOnly
       />
