@@ -1,96 +1,135 @@
-import React ,{ useContext, useEffect, useRef, useState} from 'react'
-import { generatePassword } from '../utils/passUtils'
-import { passwordContext } from '../context/PasswordContext'
+import React, { useState } from "react";
 import {
-  Button,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Slider,
-  Checkbox,
+  Box,
+  
   FormControlLabel,
-  Box
-} from '@mui/material';
-
-const PasswordGenrator = ({isDarkMode}) => {
-  const [password , setPassword] = useState('')
-  const [length, setLength] = useState(4)
-  const [number, setNumber] = useState(false)
-  const [character, setCharacter] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const passRef = useRef(null)
-  const {addPass} = useContext(passwordContext)
+  Checkbox,
+  
+  TextField as MUITextField,
+  LinearProgress,
+  CircularProgress,
+} from '@mui/material'
+import { generatePassword } from "../utils/passUtils";
 
 
-    useEffect(() => {
-    const newPass = generatePassword(length, {
-      upper: true, 
-      lower: true, 
-      numbers: number,
-      symbols: character,
-    });
-    setPassword(newPass);
-    addPass(newPass)
-  }, [length, number, character]);
+export default function PasswordGenerator({ isDarkMode }) {
+  const [length, setLength] = useState(4);
+  
+  const [options, setOptions] = useState({ upper: 1, lower: 1, numbers: 1, symbols: 1 });
 
-  const copyPassword = ()=>{
-    passRef.current?.select();
-    window.navigator.clipboard.writeText(password);
-    // alert("Copied!")
-    setCopied(true)
-    setTimeout(()=>setCopied(false),2000)
-  }
+
+  const [password, setPassword] = useState(generatePassword(length, options));
+  const [copied, setCopied] = useState(false);
+
+  const handleGenerate = () => {
+    const newPassword = generatePassword(length, options);
+    setPassword(newPassword);
+    setCopied(false);
+  };
+  const handleOptionChange = (option, value) => {
+    setOptions((prev) => ({
+      ...prev,
+      [option]: value,
+    }));
+  };
+  const handleCopy = () => {
+    navigator.clipboard.writeText(password);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const isStrong =
+  length >= 12 &&
+  options.upper > 0 &&
+  options.lower > 0 &&
+  options.numbers > 0 &&
+  options.symbols > 0;
+
+
   return (
-    <Card sx={{ maxWidth: 500, marginTop: 4, backgroundColor: isDarkMode ? 'grey.900' : 'grey.100', color: isDarkMode ? 'white' : 'black' }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          🔐 Password Generator
-        </Typography>
+  <div className={isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}>
+      <div className="min-h-screen flex flex-col items-center justify-center  p-4">
+      <h1 className="text-3xl font-bold mb-4">Password Generator</h1>
+      <p className="mb-6 text-center">Create strong passwords for your online accounts in the blink of an eye.</p>
 
-        <Box display="flex" gap={1} alignItems="center" mb={2}>
-          <TextField
-            inputRef={passRef}
-            fullWidth
-            label="Generated Password"
-            value={password}
-            InputProps={{ readOnly: true }}
-            variant="outlined"
-          />
-          <Button variant="contained" color="primary" onClick={copyPassword}>
-            Copy
-          </Button>
-        </Box>
+      <div className=" rounded-2xl p-6 w-full max-w-lg shadow-lg">
+      <div className="flex items-center justify-between mb-4">
+  <div className="flex-1 overflow-x-auto border-2  rounded-md px-2 py-1 mr-2">
+    <span className="text-sm font-mono break-all">{password}</span>
+  </div>
+  <div className="flex gap-2">
+    <button
+      onClick={handleGenerate}
+      className="text-xl"
+      title="Regenerate"
+    >
+      🔄
+    </button>
+    <button
+      onClick={handleCopy}
+      className="bg-teal-400 hover:bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg text-sm"
+    >
+      {copied ? "Copied!" : "Copy"}
+    </button>
+  </div>
+</div>
 
-        <Box mb={2}>
-          <Typography gutterBottom>Password Length: {length}</Typography>
-          <Slider
+
+        <div className="mb-4">
+          <p className="flex items-center gap-2">
+            Password strength:
+            <span className={`font-semibold ${isStrong ? "text-green-600" : "text-yellow-500"}`}>
+              {isStrong ? "Strong" : "Weak"}
+            </span>
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <label>Password length: {length}</label>
+          <input
+            type="range"
+            min="4"
+            max="128"
             value={length}
-            onChange={(e, newValue) => setLength(newValue)}
-            min={4}
-            max={128}
-            step={1}
-            valueLabelDisplay="auto"
+            onChange={(e) => setLength(Number(e.target.value))}
+            className="w-full"
           />
-        </Box>
+        </div>
 
-        <FormControlLabel
-          control={<Checkbox checked={number} onChange={() => setNumber(prev => !prev)} />}
-          label="Include Numbers"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={character} onChange={() => setCharacter(prev => !prev)} />}
-          label="Include Special Characters"
-        />
-
-        {copied && (
-          <Typography sx={{ mt: 2 }} color="success.main">
-            Copied!
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
-  )
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {['upper', 'lower', 'numbers', 'symbols'].map((type) => (
+          <Box
+            key={type}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={2}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={options[type] > 0}
+                  onChange={(e) => handleOptionChange(type, e.target.checked ? 1 : 0)}
+                />
+              }
+              label={`Include ${type}`}
+            />
+            {options[type] > 0 && (
+              <MUITextField
+                type="number"
+                size="small"
+                value={options[type]}
+                onChange={(e) =>
+                  handleOptionChange(type, Math.max(0, Math.min(length, parseInt(e.target.value) || 0)))
+                }
+                sx={{ width: 80, bgcolor: isDarkMode ? 'grey.800' : 'white' }}
+              />
+            )}
+          </Box>
+        ))}
+        </div>
+      </div>
+    </div>
+  </div>
+  );
 }
-
-export default PasswordGenrator

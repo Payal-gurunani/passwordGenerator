@@ -3,7 +3,7 @@ import './App.css'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import { IconButton } from '@mui/material';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid'  // Import icons
-import PasswordGenrator from './components/PasswordGenrator'
+import  PasswordGenerator from './components/PasswordGenrator'
 import History from './components/History';
 import { PasswordProvider } from './context/PasswordContext';
 
@@ -17,14 +17,15 @@ function App() {
     }
   },[])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.toggle('dark')
-    }else{
-      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('theme' , isDarkMode ?'dark':'light')
-  }, [isDarkMode])
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+  
 
 
   const toggletheme = () =>{
@@ -53,8 +54,7 @@ function App() {
       </IconButton >
     </div>
      <PasswordProvider >
-     <PasswordGenrator isDarkMode={isDarkMode} />
-     <History isDarkMode={isDarkMode}/>
+     < PasswordGenerator isDarkMode={isDarkMode} />
      </PasswordProvider >
     </div>
  </ThemeProvider>
