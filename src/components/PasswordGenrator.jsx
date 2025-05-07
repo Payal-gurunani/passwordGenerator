@@ -102,11 +102,19 @@ export default function PasswordGenerator({ isDarkMode }) {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={options[type].min > 0 || options[type].max > 0}
-                      onChange={(e) =>
-                        handleOptionChange(type, "min", e.target.checked ? 1 : 0)
-                      }
-                    />
+                    checked={options[type].min > 0}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setOptions((prev) => ({
+                        ...prev,
+                        [type]: {
+                          min: isChecked ? 1 : 0,
+                          max: isChecked ? Math.max(1, prev[type].max) : 0,
+                        },
+                      }));
+                    }}
+                  />
+                  
                   }
                   label={`Include ${type}`}
                 />
