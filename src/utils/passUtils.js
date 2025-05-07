@@ -1,42 +1,55 @@
 export const generatePassword = (length, options) => {
-  const { upper, lower, numbers, symbols } = options;
+  const charTypes = {
+    upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    lower: 'abcdefghijklmnopqrstuvwxyz',
+    numbers: '0123456789',
+    symbols: '!@#$%^&*(){}[]+=?<>,.-_',
+  };
 
-  const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lowerChars = 'abcdefghijklmnopqrstuvwxyz';
-  const numberChars = '0123456789';
-  const symbolChars = '!@#$%^&*(){}[]+=?<>,.-_';
+  let password = [];
+  // let availableChars = '';
+  const minTotal = Object.values(options).reduce((sum, opt) => sum + opt.min, 0);
 
-  let allChars = '';
-  let requiredChars = [];
-
-  if (upper) {
-    allChars += upperChars;
-    requiredChars.push(upperChars[Math.floor(Math.random() * upperChars.length)]);
-  }
-  if (lower) {
-    allChars += lowerChars;
-    requiredChars.push(lowerChars[Math.floor(Math.random() * lowerChars.length)]);
-  }
-  if (numbers) {
-    allChars += numberChars;
-    requiredChars.push(numberChars[Math.floor(Math.random() * numberChars.length)]);
-  }
-  if (symbols) {
-    allChars += symbolChars;
-    requiredChars.push(symbolChars[Math.floor(Math.random() * symbolChars.length)]);
+  if (minTotal > length) {
+    return '⚠️ Min values exceed length';
   }
 
-  if (!allChars) return '';
-
-  // Fill the remaining length
-  const remainingLength = length - requiredChars.length;
-  let password = requiredChars;
-
-  for (let i = 0; i < remainingLength; i++) {
-    password.push(allChars[Math.floor(Math.random() * allChars.length)]);
+  // Step 1: Add min required characters
+  for (const type in options) {
+    const chars = charTypes[type];
+    const { min } = options[type];
+    for (let i = 0; i < min; i++) {
+      password.push(chars[Math.floor(Math.random() * chars.length)]);
+    }
   }
 
-  // Shuffle to avoid predictable character placement
+  // Step 2: Build a pool respecting max values
+  const currentCounts = { upper: 0, lower: 0, numbers: 0, symbols: 0 };
+  password.forEach((char) => {
+    for (const type in charTypes) {
+      if (charTypes[type].includes(char)) {
+        currentCounts[type]++;
+      }
+    }
+  });
+
+  // Step 3: Fill remaining length within max constraints
+  while (password.length < length) {
+    const eligibleTypes = Object.keys(options).filter(
+      (type) => currentCounts[type] < options[type].max
+    );
+
+    if (eligibleTypes.length === 0) break; // Can't add more without breaking max
+
+    const type = eligibleTypes[Math.floor(Math.random() * eligibleTypes.length)];
+    const chars = charTypes[type];
+    const char = chars[Math.floor(Math.random() * chars.length)];
+
+    password.push(char);
+    currentCounts[type]++;
+  }
+
+  // Step 4: Shuffle the result
   for (let i = password.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [password[i], password[j]] = [password[j], password[i]];
