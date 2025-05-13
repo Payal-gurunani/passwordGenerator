@@ -1,47 +1,130 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react';
 import {
   Card,
   CardContent,
   Typography,
   List,
-  ListItem
+  ListItem,
+  IconButton,
+  Tooltip,
+  Button,
+  Box,
+  InputAdornment,
+  TextField
 } from '@mui/material';
+import { ContentCopy, Visibility, VisibilityOff } from '@mui/icons-material';
 
-import { passwordContext } from '../context/PasswordContext'
-const History = ({isDarkMode}) => {
- const {history} = useContext(passwordContext)
+import { passwordContext } from '../context/PasswordContext';
+
+const History = ({ isDarkMode }) => {
+  const { history, setHistory } = useContext(passwordContext);
+  const [copied, setCopied] = useState(false);
+  const [visibleIndexes, setVisibleIndexes] = useState([]);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('passwordHistory');
+  };
+
+  const toggleVisibility = (index) => {
+    setVisibleIndexes((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
   return (
-    <Card
-    sx={{
-      maxWidth: 900,
-      marginTop: 4,
-      backgroundColor: isDarkMode ? 'grey.900' : 'grey.100',
-      color: isDarkMode ? 'white' : 'black',
-    }}
-  >
-    <CardContent>
-      <Typography variant="h6" gutterBottom>
-        Password History
-      </Typography>
-      {history.length === 0 ? (
-        <Typography color="text.secondary">
-          No passwords generated yet.
-        </Typography>
-      ) : (
-        <List>
-          {history.map((pass, idx) => (
-            <ListItem
-              key={idx}
-              sx={{ wordBreak: 'break-all', px: 0 }}
-            >
-              {pass}
-            </ListItem>
-          ))}
-        </List>
-      )}
-    </CardContent>
-  </Card>
-  )
-}
+    <div className={isDarkMode ? "bg-black text-white" : "bg-white text-black"}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <h1 className="text-3xl font-bold mb-4">Previous Passwords</h1>
+        <p className="mb-6 text-center">
+          View your previously generated passwords.
+        </p>
 
-export default History
+        <div className="rounded-2xl p-6 w-full max-w-lg shadow-lg">
+          <div className="mb-4">
+          </div>
+
+          {history.length === 0 ? (
+            <Typography color="text.secondary">No passwords generated yet.</Typography>
+          ) : (
+            <List>
+              {history.map((pass, idx) => (
+                <ListItem
+                  key={idx}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                    px: 0,
+                    py: 1,
+                    wordBreak: 'break-word',
+                    borderBottom: '1px solid',
+                    borderColor: isDarkMode ? 'grey.800' : 'grey.300',
+                  }}
+                >
+                  <TextField
+                    variant="standard"
+                    value={visibleIndexes.includes(idx) ? pass : '•'.repeat(pass.length)}
+                    InputProps={{
+                      readOnly: true,
+                      disableUnderline: true,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Tooltip title={visibleIndexes.includes(idx) ? 'Hide' : 'Show'}>
+                            <IconButton onClick={() => toggleVisibility(idx)} size="small">
+                              {visibleIndexes.includes(idx) ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Copy">
+                            <IconButton onClick={() => handleCopy(pass)} size="small">
+                              <ContentCopy fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    inputProps={{
+                      style: {
+                        color: isDarkMode ? 'white' : 'black',
+                        fontFamily: 'monospace',
+                        fontSize: '0.9rem',
+                      },
+                    }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+
+          {history.length > 0 && (
+            <Box mt={2} textAlign="center">
+              <Button
+                onClick={clearHistory}
+                size="small"
+                color="error"
+                variant="text"
+                className="bg-teal-400 hover:bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg"
+              >
+                {copied ? "Copied!" : "Clear Passwords"}
+              </Button>
+            </Box>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default History;

@@ -4,6 +4,7 @@ export const passwordContext = createContext();
 
 export const PasswordProvider  = ({children}) =>{
 const [history, setHistory] = useState([]);
+const clearHistory = () => setHistory([]);
 
 useEffect(() =>{
     const saved = JSON.parse(localStorage.getItem('passwordHistory')) || [];
@@ -19,7 +20,7 @@ const addPass = (password) =>{
 }
 
 return(
-    <passwordContext.Provider value={{history,addPass}} >
+    <passwordContext.Provider value={{history,addPass,setHistory}} >
         {children}
     </passwordContext.Provider >
 )

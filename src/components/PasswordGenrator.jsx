@@ -5,8 +5,9 @@ import {
   Checkbox,
   TextField as MUITextField,
 } from "@mui/material";
-import { generatePassword } from "../utils/passUtils";
-
+import { generatePassword } from "../utils/passUtils.js";
+import { useContext } from "react";
+import { passwordContext } from "../context/PasswordContext";
 export default function PasswordGenerator({ isDarkMode }) {
   const [length, setLength] = useState(12);
   const [options, setOptions] = useState({
@@ -15,14 +16,18 @@ export default function PasswordGenerator({ isDarkMode }) {
     numbers: { min: 1, max: 3 },
     symbols: { min: 1, max: 3 },
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [password, setPassword] = useState(generatePassword(length, options));
   const [copied, setCopied] = useState(false);
 
+
+  const {addPass} = useContext(passwordContext)
   const handleGenerate = () => {
     const newPassword = generatePassword(length, options);
     setPassword(newPassword);
     setCopied(false);
+    addPass(newPassword)
   };
 
   const handleOptionChange = (type, field, value) => {
@@ -55,9 +60,24 @@ export default function PasswordGenerator({ isDarkMode }) {
 
         <div className="rounded-2xl p-6 w-full max-w-lg shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex-1 overflow-x-auto border-2 rounded-md px-2 py-1 mr-2">
-              <span className="text-sm font-mono break-all">{password}</span>
+
+            <div className="flex-1 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                readOnly
+                value={password}
+                className="w-full font-mono text-sm border-2 rounded-md px-2 py-1 pr-10 bg-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xl"
+                title={showPassword ? "Hide Password" : "Show Password"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
             </div>
+
             <div className="flex gap-2">
               <button onClick={handleGenerate} className="text-xl" title="Regenerate">
                 🔄
@@ -75,9 +95,8 @@ export default function PasswordGenerator({ isDarkMode }) {
             <p className="flex items-center gap-2">
               Password strength:
               <span
-                className={`font-semibold ${
-                  isStrong ? "text-green-600" : "text-yellow-500"
-                }`}
+                className={`font-semibold ${isStrong ? "text-green-600" : "text-yellow-500"
+                  }`}
               >
                 {isStrong ? "Strong" : "Weak"}
               </span>
@@ -102,19 +121,19 @@ export default function PasswordGenerator({ isDarkMode }) {
                 <FormControlLabel
                   control={
                     <Checkbox
-                    checked={options[type].min > 0}
-                    onChange={(e) => {
-                      const isChecked = e.target.checked;
-                      setOptions((prev) => ({
-                        ...prev,
-                        [type]: {
-                          min: isChecked ? 1 : 0,
-                          max: isChecked ? Math.max(1, prev[type].max) : 0,
-                        },
-                      }));
-                    }}
-                  />
-                  
+                      checked={options[type].min > 0}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setOptions((prev) => ({
+                          ...prev,
+                          [type]: {
+                            min: isChecked ? 1 : 0,
+                            max: isChecked ? Math.max(1, prev[type].max) : 0,
+                          },
+                        }));
+                      }}
+                    />
+
                   }
                   label={`Include ${type}`}
                 />

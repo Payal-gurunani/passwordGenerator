@@ -52,9 +52,16 @@ function App() {
           <MoonIcon className="h-5 w-5 mr-2" />
         )}
       </IconButton >
-    </div>
+    </div >
      <PasswordProvider >
-     < PasswordGenerator isDarkMode={isDarkMode} />
+    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-5xl p-4">
+    <div className="flex-1">
+      <PasswordGenerator isDarkMode={isDarkMode} />
+    </div>
+    <div className="flex-1 lg:w-1/3">
+      <History isDarkMode={isDarkMode} />
+    </div>
+  </div>
      </PasswordProvider >
     </div>
  </ThemeProvider>
