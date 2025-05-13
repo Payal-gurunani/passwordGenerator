@@ -4,15 +4,19 @@ export const passwordContext = createContext();
 
 export const PasswordProvider  = ({children}) =>{
 const [history, setHistory] = useState([]);
-const clearHistory = () => setHistory([]);
+
 
 useEffect(() =>{
     const saved = JSON.parse(localStorage.getItem('passwordHistory')) || [];
-    setHistory(saved)
+     if (saved) {
+      setHistory(saved);
+    }
 },[])
 
 useEffect(()=>{
-    localStorage.setItem('passwordHistory',JSON.stringify(history))
+ if (history.length > 0) {
+      localStorage.setItem('passwordHistory', JSON.stringify(history));
+    }
 },[history])
 
 const addPass = (password) =>{

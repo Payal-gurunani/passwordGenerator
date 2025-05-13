@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -21,6 +21,21 @@ const History = ({ isDarkMode }) => {
   const [copied, setCopied] = useState(false);
   const [visibleIndexes, setVisibleIndexes] = useState([]);
 
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = JSON.parse(localStorage.getItem('passwordHistory'));
+    if (savedHistory) {
+      setHistory(savedHistory);
+    }
+  }, [setHistory]);
+
+  // Persist history to localStorage when it changes
+  useEffect(() => {
+    if (history.length > 0) {
+      localStorage.setItem('passwordHistory', JSON.stringify(history));
+    }
+  }, [history]);
+
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -41,14 +56,13 @@ const History = ({ isDarkMode }) => {
   return (
     <div className={isDarkMode ? "bg-black text-white" : "bg-white text-black"}>
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h1 className="text-3xl font-bold mb-4">Previous Passwords</h1>
+        <h1 className="text-3xl font-bold mb-4">Password History</h1>
         <p className="mb-6 text-center">
           View your previously generated passwords.
         </p>
 
         <div className="rounded-2xl p-6 w-full max-w-lg shadow-lg">
-          <div className="mb-4">
-          </div>
+         
 
           {history.length === 0 ? (
             <Typography color="text.secondary">No passwords generated yet.</Typography>
@@ -117,7 +131,7 @@ const History = ({ isDarkMode }) => {
                 variant="text"
                 className="bg-teal-400 hover:bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg"
               >
-                {copied ? "Copied!" : "Clear Passwords"}
+                {copied ? "Copied" : "Clear passwords"}
               </Button>
             </Box>
           )}
