@@ -68,7 +68,7 @@ const History = ({ isDarkMode }) => {
             <Typography color="text.secondary">No passwords generated yet.</Typography>
           ) : (
             <List>
-              {history.map((pass, idx) => (
+              {history.slice(0,10).map((pass, idx) =>  (
                 <ListItem
                   key={idx}
                   sx={{
