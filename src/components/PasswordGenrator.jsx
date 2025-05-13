@@ -20,15 +20,24 @@ export default function PasswordGenerator({ isDarkMode }) {
 
   const [password, setPassword] = useState(generatePassword(length, options));
   const [copied, setCopied] = useState(false);
+  const [generateCount, setGenerateCount] = useState(1);
 
 
-  const {addPass} = useContext(passwordContext)
+  const { addPass } = useContext(passwordContext)
   const handleGenerate = () => {
-    const newPassword = generatePassword(length, options);
-    setPassword(newPassword);
+    const count = Math.min(generateCount, 15);
+    const generated = Array.from({ length: count }, () =>
+      generatePassword(length, options)
+    );
+
+    // Update the main password shown
+    setPassword(generated[0]);
     setCopied(false);
-    addPass(newPassword)
+
+    // Add all passwords to history
+    generated.forEach((pass) => addPass(pass));
   };
+
 
   const handleOptionChange = (type, field, value) => {
     setOptions((prev) => ({
@@ -46,9 +55,17 @@ export default function PasswordGenerator({ isDarkMode }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isStrong =
-    length >= 12 &&
-    Object.values(options).every((opt) => opt.min > 0);
+  const getStrength = () => {
+    if (length >= 8 && Object.values(options).every((opt) => opt.min > 0)) {
+      return { label: "Strong", color: "text-green-600" };
+    } else if (length >= 6) {
+      return { label: "Moderate", color: "text-yellow-500" };
+    } else {
+      return { label: "Weak", color: "text-red-500" };
+    }
+  };
+
+  const strength = getStrength();
 
   return (
     <div className={isDarkMode ? "bg-black text-white" : "bg-white text-black"}>
@@ -94,13 +111,20 @@ export default function PasswordGenerator({ isDarkMode }) {
           <div className="mb-4">
             <p className="flex items-center gap-2">
               Password strength:
-              <span
-                className={`font-semibold ${isStrong ? "text-green-600" : "text-yellow-500"
-                  }`}
-              >
-                {isStrong ? "Strong" : "Weak"}
-              </span>
+            <span className={`font-semibold ${strength.color}`}>{strength.label}</span>
             </p>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="count">How many passwords to generate (max 15):</label>
+            <input
+              id="count"
+              type="number"
+              min="1"
+              max="15"
+              value={generateCount}
+              onChange={(e) => setGenerateCount(Math.min(15, parseInt(e.target.value) || 1))}
+              className="w-full border mt-1 px-2 py-1 rounded"
+            />
           </div>
 
           <div className="mb-4">

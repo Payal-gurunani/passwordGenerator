@@ -19,9 +19,14 @@ useEffect(()=>{
     }
 },[history])
 
-const addPass = (password) =>{
-    setHistory(prev => [password , ...prev.slice(0,9)]);
-}
+const addPass = (newPassword) => {
+  setHistory(prev => {
+    const updated = [newPassword, ...prev];
+    localStorage.setItem('passwordHistory', JSON.stringify(updated));
+    return updated;
+  });
+};
+
 
 return(
     <passwordContext.Provider value={{history,addPass,setHistory}} >
