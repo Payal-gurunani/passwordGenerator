@@ -71,7 +71,7 @@ if(history.length==0){
     <div className={isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}>
       <div className='min-h-screen flex flex-col items-center justify-center p-4'>
         <h1 className='text-3xl font-bold mb-4'>
-          Genrated Passwords
+          Generated Passwords
         </h1>
         <p className='mb-6 text-center'>View your previously generated passwords.</p>
 
@@ -156,7 +156,7 @@ if(history.length==0){
                 variant='text'
                 className='bg-teal-400 hover:bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg'
               >
-                Clear passwords
+                Clear 
               </IconButton>
             </Box>
           )}

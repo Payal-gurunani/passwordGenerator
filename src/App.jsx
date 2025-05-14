@@ -5,7 +5,7 @@ import { IconButton } from '@mui/material';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid'  // Import icons
 import  PasswordGenerator from './components/PasswordGenrator'
 import History from './components/History';
-import { PasswordProvider } from './context/PasswordContext';
+import { PasswordProvider,passwordContext } from './context/PasswordContext';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -53,16 +53,18 @@ function App() {
         )}
       </IconButton >
     </div >
-     <PasswordProvider >
-    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-5xl p-4">
-    <div className="flex-1">
-      <PasswordGenerator isDarkMode={isDarkMode} />
-    </div>
-    <div className="flex-1 lg:w-1/3">
-      <History isDarkMode={isDarkMode} />
-    </div>
-  </div>
-     </PasswordProvider >
+      <PasswordProvider>
+          <div className={`flex flex-col lg:flex-row gap-6 w-full max-w-5xl p-4 ${history.length === 0 ? 'items-center justify-center' : ''}`}>
+            <div className="flex-1">
+              <PasswordGenerator isDarkMode={isDarkMode} />
+            </div>
+            {history.length > 0 && (
+              <div className="flex-1 lg:w-1/3">
+                <History isDarkMode={isDarkMode} />
+              </div>
+            )}
+          </div>
+        </PasswordProvider>
     </div>
  </ThemeProvider>
   )
