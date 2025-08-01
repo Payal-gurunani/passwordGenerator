@@ -26,16 +26,16 @@ export default function PasswordGenerator({ isDarkMode }) {
 
   const { addPass } = useContext(passwordContext)
   const handleGenerate = (count) => {
-  const useCount = count ?? generateCount; // use passed count or fallback to current state
-  const safeCount = Math.min(useCount, 15);
-  const generated = Array.from({ length: safeCount }, () =>
-    generatePassword(length, options)
-  );
+    const useCount = count ?? generateCount; // use passed count or fallback to current state
+    const safeCount = Math.min(useCount, 15);
+    const generated = Array.from({ length: safeCount }, () =>
+      generatePassword(length, options)
+    );
 
-  setPassword(generated[0]);
-  setCopied(false);
-  generated.forEach((pass) => addPass(pass));
-};
+    setPassword(generated[0]);
+    setCopied(false);
+    generated.forEach((pass) => addPass(pass));
+  };
 
 
 
@@ -68,11 +68,11 @@ export default function PasswordGenerator({ isDarkMode }) {
   const strength = getStrength();
 
   return (
-    
+
     <div className={isDarkMode ? "bg-black text-white" : "bg-white text-black"}>
-      
+
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        
+
         <h1 className="text-3xl font-bold mb-4">Password Generator</h1>
         <p className="mb-6 text-center">
           Create strong passwords for your online accounts in the blink of an eye.
@@ -99,7 +99,7 @@ export default function PasswordGenerator({ isDarkMode }) {
             </div>
 
             <div className="flex gap-2 ">
-              <button onClick={()=>handleGenerate()} className="text-xl cursor-pointer" title="Regenerate">
+              <button onClick={() => handleGenerate()} className="text-xl cursor-pointer" title="Regenerate">
                 🔄
               </button>
               <button
@@ -142,61 +142,68 @@ export default function PasswordGenerator({ isDarkMode }) {
               value={length}
               onChange={(e) => {
                 setLength(Number(e.target.value))
-                handleGenerate()
               }}
               className="w-full cursor-pointer"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-  {["upper", "lower", "numbers", "symbols"].map((type) => (
-    <Box key={type} display="flex" flexDirection="column" gap={1}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={options[type].min > 0}
-            onChange={(e) => {
-              const isChecked = e.target.checked;
-              setOptions((prev) => ({
-                ...prev,
-                [type]: {
-                  min: isChecked ? 1 : 0,
-                  max: isChecked ? Math.max(1, prev[type].max) : 0,
-                },
-              }));
-            }}
-             color="primary"
-          />
-        }
-        label={`Include ${type}`}
-        labelPlacement="end"
-      />
+            {["upper", "lower", "numbers", "symbols"].map((type) => (
+              <Box key={type} display="flex" flexDirection="column" gap={1}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={options[type].min > 0}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setOptions((prev) => ({
+                          ...prev,
+                          [type]: {
+                            min: isChecked ? 1 : 0,
+                            max: isChecked ? Math.max(1, prev[type].max) : 0,
+                          },
+                        }));
+                      }}
+                      color="primary"
+                    />
+                  }
+                  label={`Include ${type}`}
+                  labelPlacement="end"
+                />
 
-      {(options[type].min > 0 || options[type].max > 0) && (
-        <div className="flex flex-col">
-          <div className="flex justify-between text-sm text-gray-500 mb-1">
-            <span>Max Characters</span>
-            <span>{options[type].max}</span>
+                <Box display="flex" gap={1}>
+                  <MUITextField
+                    type="number"
+                    size="small"
+                    label="Min"
+                    value={options[type].min}
+                    onChange={(e) =>
+                      handleOptionChange(
+                        type,
+                        "min",
+                        Math.max(0, parseInt(e.target.value) || 0)
+                      )
+                    }
+                    sx={{ width: 80, bgcolor: isDarkMode ? "grey.800" : "white" }}
+                  />
+                  <MUITextField
+                    type="number"
+                    size="small"
+                    label="Max"
+                    value={options[type].max}
+                    onChange={(e) =>
+                      handleOptionChange(
+                        type,
+                        "max",
+                        Math.max(options[type].min, parseInt(e.target.value) || 0)
+                      )
+                    }
+                    sx={{ width: 80, bgcolor: isDarkMode ? "grey.800" : "white" }}
+                  />
+                </Box>
+              </Box>
+            ))}
           </div>
-          <input
-            type="range"
-            value={options[type].max}
-            min={options[type].min}
-            max={32}
-            onChange={(e) =>
-              handleOptionChange(
-                type,
-                "max",
-                Math.max(options[type].min, parseInt(e.target.value) || 0)
-              )
-            }
-            className="w-full"
-          />
-        </div>
-      )}
-    </Box>
-  ))}
-</div>
 
         </div>
       </div>

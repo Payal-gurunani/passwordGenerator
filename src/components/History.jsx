@@ -14,11 +14,12 @@ import {
 import { ContentCopy, Visibility, VisibilityOff } from '@mui/icons-material';
 import { passwordContext } from '../context/PasswordContext';
 
+
 const History = ({ isDarkMode }) => {
   const { history, setHistory } = useContext(passwordContext);
   const [copied, setCopied] = useState(false);
   const [visibleIndexes, setVisibleIndexes] = useState([]);
-
+const [autoRemove, setAutoRemove] = useState(true);
   // Function to check strength of the password (similar to PasswordGenerator)
   const checkStrength = (password, options) => {
     const lengthIsGood = password.length >= 8
@@ -36,7 +37,7 @@ const History = ({ isDarkMode }) => {
 
     if (allConditionsMet) {
       return { label: 'Strong', color: 'green' };
-    } else if (password.length >=6){
+    } else if (password.length >= 6) {
       return { label: 'Moderate', color: 'orange' };
     } else {
       return { label: 'Weak', color: 'red' };
@@ -48,7 +49,9 @@ const History = ({ isDarkMode }) => {
       navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      if (autoRemove) {
       setHistory(prev => prev.filter(p => p !== text));
+    }
     } catch (error) {
       console.error('Failed to copy');
     }
@@ -64,9 +67,9 @@ const History = ({ isDarkMode }) => {
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
-if(history.length==0){
-  return null;
-}
+  if (history.length == 0) {
+    return null;
+  }
   return (
     <div className={isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}>
       <div className='min-h-screen flex flex-col items-center justify-center p-4'>
@@ -74,13 +77,28 @@ if(history.length==0){
           Generated Passwords
         </h1>
         <p className='mb-6 text-center'>View your previously generated passwords.</p>
+        
+<Box display="flex" alignItems="center" mb={2}>
+  <input
+    type="checkbox"
+    checked={autoRemove}
+    onChange={() => setAutoRemove(!autoRemove)}
+    className="mr-2"
+    id="auto-remove"
+  />
+  <label htmlFor="auto-remove" className="text-md">
+    Delete password after copy?
+  </label>
+</Box>
 
         <div className='rounded-2xl p-6 w-full max-w-lg shadow-lg'>
           {history.length === 0 ? (
+            
             <Typography color='text.secondary'>No passwords generated yet.</Typography>
           ) : (
+
             <List>
-              {history.slice(0,16).map((pass, idx) => {
+              {history.slice(0, 16).map((pass, idx) => {
                 const strength = checkStrength(pass); // Use the checkStrength function
                 return (
                   <ListItem
@@ -156,7 +174,7 @@ if(history.length==0){
                 variant='text'
                 className='bg-teal-400 hover:bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg'
               >
-                Clear 
+                Clear
               </IconButton>
             </Box>
           )}

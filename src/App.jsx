@@ -2,7 +2,7 @@ import { useState , useEffect } from 'react'
 import './App.css'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import { IconButton } from '@mui/material';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/solid'  // Import icons
+import { SunIcon, MoonIcon } from '@heroicons/react/24/solid' 
 import  PasswordGenerator from './components/PasswordGenrator'
 import History from './components/History';
 import { PasswordProvider,passwordContext } from './context/PasswordContext';
